@@ -1,14 +1,13 @@
 ################################################################################
 #Michael Guerzhoy, 2016
 #AlexNet implementation in TensorFlow, with weights
+#with changes by Isabel Schwende
 #Details: 
 #http://www.cs.toronto.edu/~guerzhoy/tf_alexnet/
 #
 #With code from https://github.com/ethereon/caffe-tensorflow
 #Model from  https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet
 #Weights from Caffe converted using https://github.com/ethereon/caffe-tensorflow
-#
-# with changes by Isabel Schwende
 #
 ################################################################################
 
@@ -52,7 +51,7 @@ i = i-mean(i)
 
 ################################################################################
 
-# (self.feed('data')
+# AlexNet structure
 #         .conv(11, 11, 96, 4, 4, padding='VALID', name='conv1')
 #         .lrn(2, 2e-05, 0.75, name='norm1')
 #         .max_pool(3, 3, 2, 2, padding='VALID', name='pool1')
@@ -67,7 +66,7 @@ i = i-mean(i)
 #         .fc(1000, relu=False, name='fc8')
 #         .softmax(name='prob'))
 
-
+# loading trained weights
 net_data = load("bvlc_alexnet.npy").item()
 
 def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
@@ -93,27 +92,27 @@ with tf.Graph().as_default() as g_1:
 
 	x = tf.Variable(i)
 
-#conv1
-#conv(11, 11, 96, 4, 4, padding='VALID', name='conv1')
+	#conv1
+	#conv(11, 11, 96, 4, 4, padding='VALID', name='conv1')
 	k_h = 11; k_w = 11; c_o = 96; s_h = 4; s_w = 4
 	conv1W = tf.Variable(net_data["conv1"][0])
 	conv1b = tf.Variable(net_data["conv1"][1])
 	conv1_in = conv(x, conv1W, conv1b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=1)
 	conv1 = tf.nn.relu(conv1_in)
 
-#lrn1
-#lrn(2, 2e-05, 0.75, name='norm1')
+	#lrn1
+	#lrn(2, 2e-05, 0.75, name='norm1')
 	radius = 2; alpha = 2e-05; beta = 0.75; bias = 1.0
 	lrn1 = tf.nn.local_response_normalization(conv1,depth_radius=radius,alpha=alpha,beta=beta,bias=bias)
 
-#maxpool1
-#max_pool(3, 3, 2, 2, padding='VALID', name='pool1')
+	#maxpool1
+	#max_pool(3, 3, 2, 2, padding='VALID', name='pool1')
 	k_h = 3; k_w = 3; s_h = 2; s_w = 2; padding = 'VALID'
 	maxpool1 = tf.nn.max_pool(lrn1, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
 
-#conv2
-#conv(5, 5, 256, 1, 1, group=2, name='conv2')
+	#conv2
+	#conv(5, 5, 256, 1, 1, group=2, name='conv2')
 	k_h = 5; k_w = 5; c_o = 256; s_h = 1; s_w = 1; group = 2
 	conv2W = tf.Variable(net_data["conv2"][0])
 	conv2b = tf.Variable(net_data["conv2"][1])
@@ -121,26 +120,26 @@ with tf.Graph().as_default() as g_1:
 	conv2 = tf.nn.relu(conv2_in)
 
 
-#lrn2
-#lrn(2, 2e-05, 0.75, name='norm2')
+	#lrn2
+	#lrn(2, 2e-05, 0.75, name='norm2')
 	radius = 2; alpha = 2e-05; beta = 0.75; bias = 1.0
 	lrn2 = tf.nn.local_response_normalization(conv2,depth_radius=radius,alpha=alpha,beta=beta,bias=bias)
 
-#maxpool2
-#max_pool(3, 3, 2, 2, padding='VALID', name='pool2')                                                  
+	#maxpool2
+	#max_pool(3, 3, 2, 2, padding='VALID', name='pool2')                                                  
 	k_h = 3; k_w = 3; s_h = 2; s_w = 2; padding = 'VALID'
 	maxpool2 = tf.nn.max_pool(lrn2, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
-#conv3
-#conv(3, 3, 384, 1, 1, name='conv3')
+	#conv3
+	#conv(3, 3, 384, 1, 1, name='conv3')
 	k_h = 3; k_w = 3; c_o = 384; s_h = 1; s_w = 1; group = 1
 	conv3W = tf.Variable(net_data["conv3"][0])
 	conv3b = tf.Variable(net_data["conv3"][1])
 	conv3_in = conv(maxpool2, conv3W, conv3b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
 	conv3 = tf.nn.relu(conv3_in)
 
-#conv4
-#conv(3, 3, 384, 1, 1, group=2, name='conv4')
+	#conv4
+	#conv(3, 3, 384, 1, 1, group=2, name='conv4')
 	k_h = 3; k_w = 3; c_o = 384; s_h = 1; s_w = 1; group = 2
 	conv4W = tf.Variable(net_data["conv4"][0])
 	conv4b = tf.Variable(net_data["conv4"][1])
@@ -148,46 +147,51 @@ with tf.Graph().as_default() as g_1:
 	conv4 = tf.nn.relu(conv4_in)
 
 
-#conv5
-#conv(3, 3, 256, 1, 1, group=2, name='conv5')
+	#conv5
+	#conv(3, 3, 256, 1, 1, group=2, name='conv5')
 	k_h = 3; k_w = 3; c_o = 256; s_h = 1; s_w = 1; group = 2
 	conv5W = tf.Variable(net_data["conv5"][0])
 	conv5b = tf.Variable(net_data["conv5"][1])
 	conv5_in = conv(conv4, conv5W, conv5b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
 	conv5 = tf.nn.relu(conv5_in)
 
-#maxpool5
-#max_pool(3, 3, 2, 2, padding='VALID', name='pool5')
+	#maxpool5
+	#max_pool(3, 3, 2, 2, padding='VALID', name='pool5')
 	k_h = 3; k_w = 3; s_h = 2; s_w = 2; padding = 'VALID'
 	maxpool5 = tf.nn.max_pool(conv5, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
-#fc6
-#fc(4096, name='fc6')
+	#fc6
+	#fc(4096, name='fc6')
 	fc6W = tf.Variable(net_data["fc6"][0])
 	fc6b = tf.Variable(net_data["fc6"][1])
 	fc6 = tf.nn.relu_layer(tf.reshape(maxpool5, [1, int(prod(maxpool5.get_shape()[1:]))]), fc6W, fc6b)
 
-#fc7
-#fc(4096, name='fc7')
+	#fc7
+	#fc(4096, name='fc7')
 	fc7W = tf.Variable(net_data["fc7"][0])
 	fc7b = tf.Variable(net_data["fc7"][1])
 	fc7 = tf.nn.relu_layer(fc6, fc7W, fc7b)
 
-#fc8
-#fc(1000, relu=False, name='fc8')
+	#fc8
+	#fc(1000, relu=False, name='fc8')
 	fc8W = tf.Variable(net_data["fc8"][0])
 	fc8b = tf.Variable(net_data["fc8"][1])
 	fc8 = tf.nn.xw_plus_b(fc7, fc8W, fc8b)
-	prob = tf.nn.softmax(fc8)
-
-
 	#prob
 	#softmax(name='prob'))
+	prob = tf.nn.softmax(fc8)
+	#### End network design ####
 	
-
+	#### Initialize network and finalize graph1
 	init = tf.initialize_all_variables()
 	sess = tf.Session()
 	sess.run(init)
+	#Test output:
+	#output = sess.run(prob)
+	#inds = argsort(output)[0,:]
+	#for i in range(5):
+	#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
+	
 	for v in tf.trainable_variables():
 		vars[v.value().name] = sess.run(v)
         
@@ -195,8 +199,8 @@ with tf.Graph().as_default() as g_1:
 	#writer = tf.train.SummaryWriter('/tmp/alex_log', graph1)
 	#writer.close()
 
-	#output = sess.run(prob)
-################################################################################
+	
+#### construct graph2 with constants ############
 consts = {}
 with tf.Graph().as_default() as g_2:
     # create one graph as combination of g1 and g2
@@ -211,8 +215,3 @@ with tf.Graph().as_default() as g_2:
 	#graph2 = g_2.as_graph_def()
 	#writer = tf.train.SummaryWriter('/tmp/alex_log', sess.graph)
 	#writer.close()
-#Output:
-
-	#inds = argsort(output)[0,:]
-	#for i in range(5):
-	#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
