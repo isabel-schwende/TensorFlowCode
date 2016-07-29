@@ -1,13 +1,9 @@
 ################################################################################
 #Michael Guerzhoy, 2016
 #AlexNet implementation in TensorFlow, with weights
-#Details: 
-#http://www.cs.toronto.edu/~guerzhoy/tf_alexnet/
+#with changes by Isabel Schwende
 #
-#With code from https://github.com/ethereon/caffe-tensorflow
-#Model from  https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet
-#Weights from Caffe converted using https://github.com/ethereon/caffe-tensorflow
-#
+#Original code here: https://github.com/guerzh/tf_weights
 #
 ################################################################################
 
@@ -52,23 +48,13 @@ i = i-mean(i)
 x = tf.placeholder(tf.float32, (None,)+xdim)
 ################################################################################
 
-# (self.feed('data')
-#         .conv(11, 11, 96, 4, 4, padding='VALID', name='conv1')
-#         .lrn(2, 2e-05, 0.75, name='norm1')
-#         .max_pool(3, 3, 2, 2, padding='VALID', name='pool1')
-#         .conv(5, 5, 256, 1, 1, group=2, name='conv2')
-#         .lrn(2, 2e-05, 0.75, name='norm2')
-#         .max_pool(3, 3, 2, 2, padding='VALID', name='pool2')
-#         .conv(3, 3, 384, 1, 1, name='conv3')
-#         .conv(3, 3, 384, 1, 1, group=2, name='conv4')
-#         .conv(3, 3, 256, 1, 1, group=2, name='conv5')
-#         .fc(4096, name='fc6')
-#         .fc(4096, name='fc7')
-#         .fc(1000, relu=False, name='fc8')
-#         .softmax(name='prob'))
+# AlexNet structure explanation
+#         conv(11, 11, 96, 4, 4, padding='VALID', name='Conv2D:0')
+# 	  other operations -> Conv2D_X, BiasAdd, Reshape, Relu, LRN, MaxPool,XW_plus_b, init
+#         softmax(name='Softmax:0'))
 
-#Caffe version weights 
-#net_data = load("bvlc_alexnet.npy").item()
+# Caffe version weights from previously saved protobuf file
+# has to adapt the path here
 model_file ='/home/isabeltf/tensorflow/modelZoo/test_data/graph.pb'
 with gfile.FastGFile(model_file,'rb') as f:
 	with tf.Graph().as_default() as import_graph:
@@ -94,7 +80,7 @@ with gfile.FastGFile(model_file,'rb') as f:
 			output = sess.run(result,feed_dict ={'Variable:0':i})
 		
 			print time.time()-t
-		#Output:
-	#inds = argsort(output)[0,:]
-	#for i in range(5):
-	#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
+			#Output:
+			#inds = argsort(output)[0,:]
+			#for i in range(5):
+			#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
