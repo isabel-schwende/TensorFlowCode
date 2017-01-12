@@ -191,6 +191,21 @@ with tf.Graph().as_default() as g_1:
 	#inds = argsort(output)[0,:]
 	#for i in range(5):
 	#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
+	#### End network test ####
+	
+	#### Saving network data ####
+	checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
+    	checkpoint_state_name = "checkpoint_state"
+    	input_graph_name = "input_graph.pb"
+    	output_graph_name = "output_graph.pb"
+	
+	saver = saver_lib.Saver(write_version=saver_write_version)
+      	checkpoint_path = saver.save(
+     	  sess,
+          checkpoint_prefix,
+          global_step=0,
+          latest_filename=checkpoint_state_name)
+      	graph_io.write_graph(sess.graph, LOG_DIR, input_graph_name)
 	
 	for v in tf.trainable_variables():
 		vars[v.value().name] = sess.run(v)
