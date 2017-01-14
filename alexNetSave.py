@@ -39,7 +39,7 @@ ydim = train_y.shape[1]
 
 LOG_DIR = '/tmp/alex_log'#adapt 
 if not os.path.exists(LOG_DIR):
-	os.makedirs(LOG_DIR)
+    os.makedirs(LOG_DIR)
 
 ################################################################################
 #Read Image
