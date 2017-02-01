@@ -44,7 +44,6 @@ LOG_DIR = '/tmp/alex_log'#adapt
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-################################################################################
 #Read Image
 
 x_dummy = (random.random((1,)+ xdim)/255.).astype(float32)
@@ -70,7 +69,7 @@ with tf.Graph().as_default() as g_1:
 		#### Saving network data ####
 		checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
     		checkpoint_state_name = "checkpoint_state"
-    		input_graph_name = "input_graph.pb"
+    		
     		output_graph_name = "output_graph.pb"
 	
 		saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
@@ -79,5 +78,8 @@ with tf.Graph().as_default() as g_1:
 		  checkpoint_prefix,
 		  global_step=0,
 		  latest_filename=checkpoint_state_name)
-		tf.train.write_graph(g_1, LOG_DIR, input_graph_name)
+
+	input_graph_name = "input_graph.pb"
+
+	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
 	
