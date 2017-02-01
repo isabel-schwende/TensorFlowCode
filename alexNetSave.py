@@ -185,7 +185,7 @@ with tf.Graph().as_default() as g_1:
 	#### End network design ####
 	
 	#### Initialize network and finalize graph1
-	init = tf.initialize_all_variables()
+	init = tf.global_variables_initializer()
 	sess = tf.Session()
 	sess.run(init)
 	#Test output:
