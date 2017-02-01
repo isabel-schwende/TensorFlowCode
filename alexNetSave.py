@@ -89,10 +89,8 @@ def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group
         conv = tf.concat(3, output_groups)
     return  tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape().as_list())
 
-vars = {}
-with tf.Graph().as_default() as g_1:
-
-	x = tf.Variable(i)
+def mygraph(g_n,in):
+	x = tf.Variable(in)
 
 	#conv1
 	#conv(11, 11, 96, 4, 4, padding='VALID', name='conv1')
@@ -112,7 +110,6 @@ with tf.Graph().as_default() as g_1:
 	k_h = 3; k_w = 3; s_h = 2; s_w = 2; padding = 'VALID'
 	maxpool1 = tf.nn.max_pool(lrn1, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
-
 	#conv2
 	#conv(5, 5, 256, 1, 1, group=2, name='conv2')
 	k_h = 5; k_w = 5; c_o = 256; s_h = 1; s_w = 1; group = 2
@@ -120,7 +117,6 @@ with tf.Graph().as_default() as g_1:
 	conv2b = tf.Variable(net_data["conv2"][1])
 	conv2_in = conv(maxpool1, conv2W, conv2b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
 	conv2 = tf.nn.relu(conv2_in)
-
 
 	#lrn2
 	#lrn(2, 2e-05, 0.75, name='norm2')
@@ -147,7 +143,6 @@ with tf.Graph().as_default() as g_1:
 	conv4b = tf.Variable(net_data["conv4"][1])
 	conv4_in = conv(conv3, conv4W, conv4b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
 	conv4 = tf.nn.relu(conv4_in)
-
 
 	#conv5
 	#conv(3, 3, 256, 1, 1, group=2, name='conv5')
@@ -183,8 +178,11 @@ with tf.Graph().as_default() as g_1:
 	#softmax(name='prob'))
 	prob = tf.nn.softmax(fc8)
 	#### End network design ####
+	return g_n,prob 	
 	
+with tf.Graph().as_default() as g_1:	
 	#### Initialize network and finalize graph1
+	g_1,prob = mygraph(g_1,i)
 	init = tf.global_variables_initializer()
 	with sess as tf.Session()
 		sess.run(init)
@@ -207,5 +205,5 @@ with tf.Graph().as_default() as g_1:
 		  checkpoint_prefix,
 		  global_step=0,
 		  latest_filename=checkpoint_state_name)
-		tf.train.write_graph(sess.graph, LOG_DIR, input_graph_name)
+		tf.train.write_graph(g_1, LOG_DIR, input_graph_name)
 	
