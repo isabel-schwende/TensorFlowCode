@@ -186,49 +186,26 @@ with tf.Graph().as_default() as g_1:
 	
 	#### Initialize network and finalize graph1
 	init = tf.global_variables_initializer()
-	sess = tf.Session()
-	sess.run(init)
-	#Test output:
-	#output = sess.run(prob)
-	#inds = argsort(output)[0,:]
-	#for i in range(5):
-	#	print class_names[inds[-1-i]], output[0, inds[-1-i]]
-	#### End network test ####
+	with sess as tf.Session()
+		sess.run(init)
+		#Test output:
+		output = sess.run(prob)
+		inds = argsort(output)[0,:]
+		for i in range(5):
+			print class_names[inds[-1-i]], output[0, inds[-1-i]]
+		#### End network test ####
 	
-	#### Saving network data ####
-	checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
-    	checkpoint_state_name = "checkpoint_state"
-    	input_graph_name = "input_graph.pb"
-    	output_graph_name = "output_graph.pb"
+		#### Saving network data ####
+		checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
+    		checkpoint_state_name = "checkpoint_state"
+    		input_graph_name = "input_graph.pb"
+    		output_graph_name = "output_graph.pb"
 	
-	saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
-      	checkpoint_path = saver.save(
-     	  sess,
-          checkpoint_prefix,
-          global_step=0,
-          latest_filename=checkpoint_state_name)
-      	tf.train.write_graph(sess.graph, LOG_DIR, input_graph_name)
+		saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
+		checkpoint_path = saver.save(
+		  sess,
+		  checkpoint_prefix,
+		  global_step=0,
+		  latest_filename=checkpoint_state_name)
+		tf.train.write_graph(sess.graph, LOG_DIR, input_graph_name)
 	
-	for v in tf.trainable_variables():
-		vars[v.value().name] = sess.run(v)
-        
-	graph1 = g_1.as_graph_def()
-	#writer = tf.train.SummaryWriter('/tmp/alex_log', graph1)
-	#writer.close()
-
-	
-#### construct graph2 with constants ############
-consts = {}
-with tf.Graph().as_default() as g_2:
-    # create one graph as combination of g1 and g2
-    # mapping string to tensor objects 
-	for k in vars.keys():
-		consts[k] = tf.constant(vars[k])
-	tf.import_graph_def(graph1,input_map={name:consts[name] for name in consts.keys()})
-	#print consts
-	#print '-----------------path---------'
-	tf.train.write_graph(sess.graph_def,'.','graph.pb',False)
-	#print os.path.join('.','graph.pb')
-	#graph2 = g_2.as_graph_def()
-	#writer = tf.train.SummaryWriter('/tmp/alex_log', sess.graph)
-	#writer.close()
