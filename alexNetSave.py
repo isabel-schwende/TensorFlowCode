@@ -25,10 +25,12 @@ import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
 from numpy import random
-
+from tensorflow.python.training import saver as saver_lib
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
+from tensorflow.core.protobuf import saver_pb2
+#from tensorflow.python.framework import graph_io
 
 from caffe_classes import class_names
 
@@ -199,13 +201,13 @@ with tf.Graph().as_default() as g_1:
     	input_graph_name = "input_graph.pb"
     	output_graph_name = "output_graph.pb"
 	
-	saver = saver_lib.Saver(write_version=saver_write_version)
+	saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
       	checkpoint_path = saver.save(
      	  sess,
           checkpoint_prefix,
           global_step=0,
           latest_filename=checkpoint_state_name)
-      	graph_io.write_graph(sess.graph, LOG_DIR, input_graph_name)
+      	tf.train.write_graph(sess.graph, LOG_DIR, input_graph_name)
 	
 	for v in tf.trainable_variables():
 		vars[v.value().name] = sess.run(v)
