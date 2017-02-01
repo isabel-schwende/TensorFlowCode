@@ -186,7 +186,7 @@ with tf.Graph().as_default() as g_1:
 	
 	#### Initialize network and finalize graph1
 	init = tf.global_variables_initializer()
-	with sess as tf.Session()
+	with tf.Session() as sess:
 		sess.run(init)
 		#Test output:
 		output = sess.run(prob)
