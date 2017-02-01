@@ -56,7 +56,7 @@ net_data = load("bvlc_alexnet.npy").item()
 	
 with tf.Graph().as_default() as g_1:	
 	#### Initialize network and finalize graph1
-	g_1,prob = mygraph(g_1,i)
+	g_1,prob = mygraph(g_1,i,net_data)
 	init = tf.global_variables_initializer()
 	with tf.Session() as sess:
 		sess.run(init)

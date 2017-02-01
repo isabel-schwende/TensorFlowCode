@@ -51,7 +51,7 @@ def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group
         conv = tf.concat(3, output_groups)
     return  tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape().as_list())
 
-def mygraph(g_n,input_data):
+def mygraph(g_n,input_data,net_data):
 	x = tf.Variable(input_data)
 
 	#conv1
