@@ -1,0 +1,11 @@
+# generated files and input files #
+###################################
+
+*.pb
+*.npy
+*.pyc
+*.png
+
+caffe_classes.py
+
+################################### 
