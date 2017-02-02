@@ -15,3 +15,9 @@ Two phases:
 alexNetSave.py
 2) loading the model from the protobuf file and use it for inference
 alexNetLoad.py
+
+Error messages that might appear:
+If docker image with TensorFlow source build is used, this Error might appear
+404 Not Found Error downloading [http://zlib.net/zlib-1.2.8.tar.gz]
+Then follow instructions here:
+https://github.com/tensorflow/tensorflow/issues/6594 
