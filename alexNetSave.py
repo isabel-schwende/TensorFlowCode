@@ -12,28 +12,28 @@
 ################################################################################
 
 from numpy import *
+from numpy import random
+import numpy as np
 import os
 import os.path
 from pylab import *
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
+import matplotlib.image as mpimg
 import time
 from scipy.misc import imread
 from scipy.misc import imresize
-import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
-from numpy import random
-from tensorflow.python.training import saver as saver_lib
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 from tensorflow.core.protobuf import saver_pb2
-#from tensorflow.python.framework import graph_io
+from tensorflow.python.training import saver as saver_lib
 
 from caffe_classes import class_names
 from graph_util import mygraph
+from freeze_graph import freeze_graph
 
 train_x = zeros((1, 227,227,3)).astype(float32)
 train_y = zeros((1, 1000))
