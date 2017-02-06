@@ -19,7 +19,10 @@ from scipy.misc import imread
 
 import tensorflow as tf
 from tensorflow.core.protobuf import saver_pb2
+from tensorflow.core.framework import graph_pb2
 from tensorflow.python.training import saver as saver_lib
+from tensorflow.python.framework import ops
+from tensorflow.python.framework import importer
 
 from caffe_classes import class_names
 from graph_util import mygraph
@@ -83,10 +86,10 @@ filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(LOG_DIR, output_graph_name)
 clear_devices = False
 
-freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
-                          input_binary, checkpoint_path, output_node_names,
-                          restore_op_name, filename_tensor_name,
-                          output_graph_path, clear_devices, "")
+freeze_graph(input_graph_path, input_saver_def_path,
+             input_binary, checkpoint_path, output_node_names,
+             restore_op_name, filename_tensor_name,
+             output_graph_path, clear_devices, "")
 
 # Now we make sure that the graph still produces the expected result.
 with ops.Graph().as_default():
@@ -95,7 +98,7 @@ with ops.Graph().as_default():
 		output_graph_def.ParseFromString(f.read())
 		_ = importer.import_graph_def(output_graph_def, name="")
 
-	with session.Session() as sess:
+	with tf.Session() as sess:
 		output_node = sess.graph.get_tensor_by_name("output_node:0")
 		output = sess.run(output_node)
 		inds = argsort(output)[0,:]
