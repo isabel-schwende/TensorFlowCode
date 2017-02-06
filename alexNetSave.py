@@ -45,6 +45,11 @@ i[0,:,:,:] = (imread("poodle.png")[:,:,:3]).astype(float32)
 i = i-mean(i)
 # loading trained weights
 net_data = load("bvlc_alexnet.npy").item()
+
+
+
+
+
 	
 with tf.Graph().as_default() as g_1:	
 	#### Initialize network and finalize graph1
@@ -63,8 +68,6 @@ with tf.Graph().as_default() as g_1:
 		checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
     		checkpoint_state_name = "checkpoint_state"
     		
-    		output_graph_name = "output_graph.pb"
-	
 		saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
 		#checkpoint_path = saver.save(
 		#  sess,
@@ -72,14 +75,15 @@ with tf.Graph().as_default() as g_1:
 		#  global_step=0,
 		#  latest_filename=checkpoint_state_name)
 
-	input_graph_name = "input_graph.pb"
+	input_graph_name = "graph_without_weights.pb"
 # 	We save out the graph to disk
-#	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
+	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
 
 #call freeze graph 
 input_graph_path = os.path.join(LOG_DIR, input_graph_name)
 input_saver_def_path = ""
-input_binary = False
+input_binary = True 
+output_graph_name= "full_graph"
 output_node_names = "output_node"
 restore_op_name = "save/restore_all"
 filename_tensor_name = "save/Const:0"
@@ -87,7 +91,7 @@ output_graph_path = os.path.join(LOG_DIR, output_graph_name)
 clear_devices = False
 
 freeze_graph(input_graph_path, input_saver_def_path,
-             input_binary, checkpoint_path, output_node_names,
+             input_binary, LOG_DIR, output_node_names,
              restore_op_name, filename_tensor_name,
              output_graph_path, clear_devices, "")
 
