@@ -46,9 +46,10 @@ i = i-mean(i)
 # loading trained weights
 net_data = load("bvlc_alexnet.npy").item()
 
-
-
-
+checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
+checkpoint_state_name = "checkpoint_state"
+input_graph_name = "graph_without_weights.pb"
+output_graph_name= "full_graph.pb"
 
 	
 with tf.Graph().as_default() as g_1:	
@@ -62,12 +63,8 @@ with tf.Graph().as_default() as g_1:
 		inds = argsort(output)[0,:]
 		for i in range(5):
 			print class_names[inds[-1-i]], output[0, inds[-1-i]]
-		#### End network test ####
 	
-		#### Saving network data ####
-		checkpoint_prefix = os.path.join(LOG_DIR, "saved_checkpoint")
-    		checkpoint_state_name = "checkpoint_state"
-    		
+		#Saving network weight checkpoints
 		saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
 		#checkpoint_path = saver.save(
 		#  sess,
@@ -75,7 +72,6 @@ with tf.Graph().as_default() as g_1:
 		#  global_step=0,
 		#  latest_filename=checkpoint_state_name)
 
-	input_graph_name = "graph_without_weights.pb"
 # 	We save out the graph to disk
 	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
 
@@ -83,7 +79,6 @@ with tf.Graph().as_default() as g_1:
 input_graph_path = os.path.join(LOG_DIR, input_graph_name)
 input_saver_def_path = ""
 input_binary = True 
-output_graph_name= "full_graph"
 output_node_names = "output_node"
 restore_op_name = "save/restore_all"
 filename_tensor_name = "save/Const:0"
