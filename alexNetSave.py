@@ -12,22 +12,12 @@
 ################################################################################
 
 from numpy import *
-from numpy import random
 import numpy as np
 import os
 import os.path
-from pylab import *
-import matplotlib.pyplot as plt
-import matplotlib.cbook as cbook
-import matplotlib.image as mpimg
-import time
 from scipy.misc import imread
-from scipy.misc import imresize
-from scipy.ndimage import filters
-import urllib
 
 import tensorflow as tf
-from tensorflow.python.platform import gfile
 from tensorflow.core.protobuf import saver_pb2
 from tensorflow.python.training import saver as saver_lib
 
@@ -46,7 +36,7 @@ if not os.path.exists(LOG_DIR):
 
 #Read Image
 
-x_dummy = (random.random((1,)+ xdim)/255.).astype(float32)
+x_dummy = (np.random.random((1,)+ xdim)/255.).astype(float32)
 i = x_dummy.copy()
 i[0,:,:,:] = (imread("poodle.png")[:,:,:3]).astype(float32)
 i = i-mean(i)
@@ -81,5 +71,5 @@ with tf.Graph().as_default() as g_1:
 
 	input_graph_name = "input_graph.pb"
 
-	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
+#	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
 	
