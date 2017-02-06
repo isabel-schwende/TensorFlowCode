@@ -63,13 +63,41 @@ with tf.Graph().as_default() as g_1:
     		output_graph_name = "output_graph.pb"
 	
 		saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
-		checkpoint_path = saver.save(
-		  sess,
-		  checkpoint_prefix,
-		  global_step=0,
-		  latest_filename=checkpoint_state_name)
+		#checkpoint_path = saver.save(
+		#  sess,
+		#  checkpoint_prefix,
+		#  global_step=0,
+		#  latest_filename=checkpoint_state_name)
 
 	input_graph_name = "input_graph.pb"
-
+# 	We save out the graph to disk
 #	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
-	
+
+#call freeze graph 
+input_graph_path = os.path.join(LOG_DIR, input_graph_name)
+input_saver_def_path = ""
+input_binary = False
+output_node_names = "output_node"
+restore_op_name = "save/restore_all"
+filename_tensor_name = "save/Const:0"
+output_graph_path = os.path.join(LOG_DIR, output_graph_name)
+clear_devices = False
+
+freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
+                          input_binary, checkpoint_path, output_node_names,
+                          restore_op_name, filename_tensor_name,
+                          output_graph_path, clear_devices, "")
+
+# Now we make sure that the graph still produces the expected result.
+with ops.Graph().as_default():
+	output_graph_def = graph_pb2.GraphDef()
+	with open(output_graph_path, "rb") as f:
+		output_graph_def.ParseFromString(f.read())
+		_ = importer.import_graph_def(output_graph_def, name="")
+
+	with session.Session() as sess:
+		output_node = sess.graph.get_tensor_by_name("output_node:0")
+		output = sess.run(output_node)
+		inds = argsort(output)[0,:]
+		for i in range(5):
+			print class_names[inds[-1-i]], output[0, inds[-1-i]]
