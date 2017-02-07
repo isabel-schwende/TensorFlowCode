@@ -73,20 +73,21 @@ with tf.Graph().as_default() as g_1:
 		#  latest_filename=checkpoint_state_name)
 
 # 	We save out the graph to disk
-	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
+#	tf.train.write_graph(g_1.as_graph_def(), LOG_DIR, input_graph_name,False)
 
 #call freeze graph 
 input_graph_path = os.path.join(LOG_DIR, input_graph_name)
-input_saver_def_path = ""
+input_saver_def_path = "" 
 input_binary = True 
-output_node_names = "output_node"
+output_node_names = "prob"
 restore_op_name = "save/restore_all"
 filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(LOG_DIR, output_graph_name)
 clear_devices = False
+ckpt_path = os.path.join(LOG_DIR, "saved_checkpoint-0")
 
 freeze_graph(input_graph_path, input_saver_def_path,
-             input_binary, LOG_DIR, output_node_names,
+             input_binary, ckpt_path, output_node_names,
              restore_op_name, filename_tensor_name,
              output_graph_path, clear_devices, "")
 
@@ -99,7 +100,7 @@ with ops.Graph().as_default():
 
 	with tf.Session() as sess:
 		output_node = sess.graph.get_tensor_by_name("output_node:0")
-		output = sess.run(output_node)
+		output = sess.run(prob)
 		inds = argsort(output)[0,:]
 		for i in range(5):
 			print class_names[inds[-1-i]], output[0, inds[-1-i]]
