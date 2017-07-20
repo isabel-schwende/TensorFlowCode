@@ -15,3 +15,6 @@ Two phases:
 alexNetSave.py
 2) loading the model from the protobuf file and use it for inference
 alexNetLoad.py
+
+Code to convert variables to constants for saving the graph:
+https://github.com/tensorflow/tensorflow/blob/64edd34ce69b4a8033af5d217cb8894105297d8a/tensorflow/python/framework/graph_util_impl.py#L178
